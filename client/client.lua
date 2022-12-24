@@ -1,4 +1,4 @@
-local QRCore = exports['qr-core']:GetCoreObject()
+local RSGCore = exports['rsg-core']:GetCoreObject()
 local alcoholCount = 0
 
 Citizen.CreateThread(function()
@@ -43,7 +43,7 @@ AddEventHandler("rsg-drinker:client:DrinkWhiskey", function()
         Wait(500)
         if Citizen.InvokeNative(0x6AA3DCA2C6F5EB6D, PlayerPedId()) == 1204708816 then
             alcoholCount = alcoholCount + Config.WhiskeyIncrease
-			TriggerServerEvent("QRCore:Server:SetMetaData", "thirst", QRCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)			
+			TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)			
         end
     end
 end)
@@ -61,7 +61,7 @@ AddEventHandler("rsg-drinker:client:DrinkBeer", function()
         Wait(500)
         if Citizen.InvokeNative(0x6AA3DCA2C6F5EB6D, PlayerPedId()) == 1183277175 then
             alcoholCount = alcoholCount + Config.BeerIncrease
-			TriggerServerEvent("QRCore:Server:SetMetaData", "thirst", QRCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+			TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
         end
     end
 end)
@@ -76,7 +76,7 @@ AddEventHandler("rsg-drinker:client:DrinkCoffee", function()
     local propEntity = CreateObject(modelhash, GetEntityCoords(PlayerPedId()), true, false, false, false, true)
 	Citizen.InvokeNative(0x669655FFB29EF1A9, propEntity, 0, "CTRL_cupFill", 1.0)
 	TaskItemInteraction_2(PlayerPedId(), GetHashKey("CONSUMABLE_COFFEE"), propEntity, GetHashKey("P_MUGCOFFEE01X_PH_R_HAND"), GetHashKey("DRINK_COFFEE_HOLD"), 1, 0, -1082130432)
-	TriggerServerEvent("QRCore:Server:SetMetaData", "thirst", QRCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+	TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
 end)
 
 RegisterNetEvent("rsg-drinker:client:DrinkMoonshine")
@@ -101,7 +101,7 @@ AddEventHandler("rsg-drinker:client:DrinkMoonshine", function()
     ClearPedTasks(playerPed)
     DeleteObject(tempObj2)
     SetModelAsNoLongerNeeded(prop)
-	TriggerServerEvent("QRCore:Server:SetMetaData", "thirst", QRCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+	TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
 	alcoholCount = alcoholCount + Config.MoonshineIncrease
 end)
 
