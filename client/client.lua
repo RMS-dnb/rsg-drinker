@@ -1,5 +1,6 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 local alcoholCount = 0
+local effectActive = false
 
 Citizen.CreateThread(function()
     while true do
@@ -7,22 +8,30 @@ Citizen.CreateThread(function()
         if alcoholCount > 0 then
             Wait(5000)
             alcoholCount = alcoholCount -1
-			if Config.Debug == true then
-				print("alcohol count: "..alcoholCount)
-				Wait(1000)
-			end
-			if alcoholCount > Config.Drunk and alcoholCount < Config.PassOut then
+            if Config.Debug == true then
+                print("alcohol count: "..alcoholCount)
+                Wait(1000)
+            end
+            if alcoholCount > Config.Drunk and alcoholCount < Config.PassOut then
                 Citizen.InvokeNative(0x406CCF555B04FAD3 , PlayerPedId(), 1, 0.95) --drunk
-			elseif alcoholCount > Config.PassOut then
-				TriggerEvent('rsg-drinker:client:puke')
-				Wait(10000)
-				TriggerEvent('rsg-drinker:client:cancelemote')
-				TriggerEvent('rsg-drinker:client:sleep')
-				Wait(30000)
-				TriggerEvent('rsg-drinker:client:cancelemote')
-				alcoholCount = Config.WakeUp
-			else
-				Citizen.InvokeNative(0x406CCF555B04FAD3 , PlayerPedId(), 1, 0.0) --not drunk
+                if Config.DrunkEffect == true and effectActive == false then
+                    AnimpostfxPlay("PlayerDrunk01") -- start screen effect
+                    effectActive = true
+                end
+            elseif alcoholCount > Config.PassOut then
+                TriggerEvent('rsg-drinker:client:puke')
+                Wait(10000)
+                TriggerEvent('rsg-drinker:client:cancelemote')
+                TriggerEvent('rsg-drinker:client:sleep')
+                Wait(30000)
+                TriggerEvent('rsg-drinker:client:cancelemote')
+                alcoholCount = Config.WakeUp
+            else
+                Citizen.InvokeNative(0x406CCF555B04FAD3 , PlayerPedId(), 1, 0.0) --not drunk
+                if Config.DrunkEffect == true and effectActive == true then
+                    AnimpostfxStop("PlayerDrunk01") -- stop screen effect
+                    effectActive = false
+                end
             end
         else
             Wait(2000)
@@ -32,7 +41,7 @@ end)
 
 RegisterNetEvent("rsg-drinker:client:DrinkWhiskey")
 AddEventHandler("rsg-drinker:client:DrinkWhiskey", function()
-	local modelhash = GetHashKey('p_bottleJD01x')
+    local modelhash = GetHashKey('p_bottleJD01x')
     RequestModel(modelhash)
     while not HasModelLoaded(modelhash) do
         Wait(10)
@@ -43,14 +52,14 @@ AddEventHandler("rsg-drinker:client:DrinkWhiskey", function()
         Wait(500)
         if Citizen.InvokeNative(0x6AA3DCA2C6F5EB6D, PlayerPedId()) == 1204708816 then
             alcoholCount = alcoholCount + Config.WhiskeyIncrease
-			TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)			
+            TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)            
         end
     end
 end)
 
 RegisterNetEvent("rsg-drinker:client:DrinkBeer")
 AddEventHandler("rsg-drinker:client:DrinkBeer", function()
-	local modelhash = GetHashKey('p_bottleBeer01x')
+    local modelhash = GetHashKey('p_bottleBeer01x')
     RequestModel(modelhash)
     while not HasModelLoaded(modelhash) do
         Wait(10)
@@ -61,22 +70,22 @@ AddEventHandler("rsg-drinker:client:DrinkBeer", function()
         Wait(500)
         if Citizen.InvokeNative(0x6AA3DCA2C6F5EB6D, PlayerPedId()) == 1183277175 then
             alcoholCount = alcoholCount + Config.BeerIncrease
-			TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+            TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
         end
     end
 end)
 
 RegisterNetEvent("rsg-drinker:client:DrinkCoffee")
 AddEventHandler("rsg-drinker:client:DrinkCoffee", function()
-	local modelhash = GetHashKey('P_MUGCOFFEE01X')
+    local modelhash = GetHashKey('P_MUGCOFFEE01X')
     RequestModel(modelhash)
     while not HasModelLoaded(modelhash) do
         Wait(10)
     end
     local propEntity = CreateObject(modelhash, GetEntityCoords(PlayerPedId()), true, false, false, false, true)
-	Citizen.InvokeNative(0x669655FFB29EF1A9, propEntity, 0, "CTRL_cupFill", 1.0)
-	TaskItemInteraction_2(PlayerPedId(), GetHashKey("CONSUMABLE_COFFEE"), propEntity, GetHashKey("P_MUGCOFFEE01X_PH_R_HAND"), GetHashKey("DRINK_COFFEE_HOLD"), 1, 0, -1082130432)
-	TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+    Citizen.InvokeNative(0x669655FFB29EF1A9, propEntity, 0, "CTRL_cupFill", 1.0)
+    TaskItemInteraction_2(PlayerPedId(), GetHashKey("CONSUMABLE_COFFEE"), propEntity, GetHashKey("P_MUGCOFFEE01X_PH_R_HAND"), GetHashKey("DRINK_COFFEE_HOLD"), 1, 0, -1082130432)
+    TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
 end)
 
 RegisterNetEvent("rsg-drinker:client:DrinkMoonshine")
@@ -101,8 +110,8 @@ AddEventHandler("rsg-drinker:client:DrinkMoonshine", function()
     ClearPedTasks(playerPed)
     DeleteObject(tempObj2)
     SetModelAsNoLongerNeeded(prop)
-	TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
-	alcoholCount = alcoholCount + Config.MoonshineIncrease
+    TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+    alcoholCount = alcoholCount + Config.MoonshineIncrease
 end)
 
 RegisterNetEvent('rsg-drinker:client:puke')
@@ -121,14 +130,14 @@ end)
 
 RegisterNetEvent('rsg-drinker:client:cancelemote')
 AddEventHandler('rsg-drinker:client:cancelemote', function()
-	local ped = PlayerPedId()
-	ClearPedTasks(ped)
-	SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
+    local ped = PlayerPedId()
+    ClearPedTasks(ped)
+    SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
 end)
 
 function loadAnimDict(dict)
-	RequestAnimDict(dict)
-	while not HasAnimDictLoaded(dict) do
-		Wait(100)
-	end
+    RequestAnimDict(dict)
+    while not HasAnimDictLoaded(dict) do
+        Wait(100)
+    end
 end
