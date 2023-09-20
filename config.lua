@@ -4,12 +4,13 @@ Config = {}
 Config.Debug = false
 
 -- settings
-Config.BeerIncrease = 1
-Config.WhiskeyIncrease = 2
-Config.MoonshineIncrease = 50
-Config.Drunk = 50 -- you are drunk when you hit above this number
-Config.PassOut = 300 -- you will puke and passout when you hit this number
-Config.WakeUp = 100 -- after passout your drunk setting is set to this number
+Config.BeerIncrease = 0.4
+Config.WhiskeyIncrease = 0.4
+Config.VodkaIncrease = 25
+Config.MoonshineIncrease = 40
+Config.Drunk = 100 -- you are drunk when you hit above this number
+Config.PassOut = 200 -- you will puke and passout when you hit this number
+Config.WakeUp = 0 -- after passout your drunk setting is set to this number
 Config.AddThurst = 25 -- add thurst increase when you drink
 
 -- drunk effect

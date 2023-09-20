@@ -57,6 +57,34 @@ AddEventHandler("rsg-drinker:client:DrinkWhiskey", function()
     end
 end)
 
+
+RegisterNetEvent("rsg-drinker:client:DrinkVodka")
+AddEventHandler("rsg-drinker:client:DrinkVodka", function()
+    local dict = "amb_rest_drunk@world_human_drinking@male_a@idle_a"
+    local playerPed = PlayerPedId()
+    local pos = GetEntityCoords(playerPed)
+    local prop = GetHashKey("p_masonjarmoonshine01x")
+    RequestAnimDict(dict)
+    while not HasAnimDictLoaded(dict) do
+        Wait(10)
+    end
+    RequestModel(prop)
+    while not HasModelLoaded(prop) do
+        Wait(10)
+    end
+    local tempObj2 = CreateObject(prop, pos.x, pos.y, pos.z, true, true, false)
+    local boneIndex = GetEntityBoneIndexByName(playerPed, "SKEL_R_HAND")
+    AttachEntityToEntity(tempObj2, playerPed, boneIndex, 0.05, -0.07, -0.05, -75.0, 60.0, 0.0, true, true, false, true,  1, true)
+    TaskPlayAnim(PlayerPedId(), dict, "idle_a", 1.0, 8.0, -1, 31, 0, false, false, false)
+    Wait(10000)
+    ClearPedTasks(playerPed)
+    DeleteObject(tempObj2)
+    SetModelAsNoLongerNeeded(prop)
+    TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+    alcoholCount = alcoholCount + Config.VodkaIncrease
+end)
+
+
 RegisterNetEvent("rsg-drinker:client:DrinkBeer")
 AddEventHandler("rsg-drinker:client:DrinkBeer", function()
     local modelhash = GetHashKey('p_bottleBeer01x')
@@ -75,18 +103,7 @@ AddEventHandler("rsg-drinker:client:DrinkBeer", function()
     end
 end)
 
-RegisterNetEvent("rsg-drinker:client:DrinkCoffee")
-AddEventHandler("rsg-drinker:client:DrinkCoffee", function()
-    local modelhash = GetHashKey('P_MUGCOFFEE01X')
-    RequestModel(modelhash)
-    while not HasModelLoaded(modelhash) do
-        Wait(10)
-    end
-    local propEntity = CreateObject(modelhash, GetEntityCoords(PlayerPedId()), true, false, false, false, true)
-    Citizen.InvokeNative(0x669655FFB29EF1A9, propEntity, 0, "CTRL_cupFill", 1.0)
-    TaskItemInteraction_2(PlayerPedId(), GetHashKey("CONSUMABLE_COFFEE"), propEntity, GetHashKey("P_MUGCOFFEE01X_PH_R_HAND"), GetHashKey("DRINK_COFFEE_HOLD"), 1, 0, -1082130432)
-    TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
-end)
+
 
 RegisterNetEvent("rsg-drinker:client:DrinkMoonshine")
 AddEventHandler("rsg-drinker:client:DrinkMoonshine", function()
@@ -121,12 +138,68 @@ AddEventHandler('rsg-drinker:client:puke', function()
     RemoveAnimDict('amb_misc@world_human_vomit@male_a@idle_b')
 end)
 
+RegisterNetEvent("rsg-drinker:client:DrinkCoffee")
+AddEventHandler("rsg-drinker:client:DrinkCoffee", function()
+    local modelhash = GetHashKey('P_MUGCOFFEE01X')
+    RequestModel(modelhash)
+    while not HasModelLoaded(modelhash) do
+        Wait(10)
+    end
+    local propEntity = CreateObject(modelhash, GetEntityCoords(PlayerPedId()), true, false, false, false, true)
+    Citizen.InvokeNative(0x669655FFB29EF1A9, propEntity, 0, "CTRL_cupFill", 1.0)
+    TaskItemInteraction_2(PlayerPedId(), GetHashKey("CONSUMABLE_COFFEE"), propEntity, GetHashKey("P_MUGCOFFEE01X_PH_R_HAND"), GetHashKey("DRINK_COFFEE_HOLD"), 1, 0, -1082130432)
+    TriggerServerEvent("RSGCore:Server:SetMetaData", "thirst", RSGCore.Functions.GetPlayerData().metadata["thirst"] + Config.AddThurst)
+end)
+
+
+
+
+
+
+-- Define an array of possible sleeping locations
+
+local sleepLocations = {
+    vector3(-5746.057, -3116.634, -12.15037), -- Location 1
+    vector3(-3240.759, -2945.881, -0.81707), -- Location 2
+    -- Add more locations as needed
+}
+
 RegisterNetEvent('rsg-drinker:client:sleep')
 AddEventHandler('rsg-drinker:client:sleep', function()
+    -- Fade out the screen
+
     loadAnimDict('amb_rest@world_human_sleep_ground@arm@male_b@idle_b')
     TaskPlayAnim(PlayerPedId(), 'amb_rest@world_human_sleep_ground@arm@male_b@idle_b', 'idle_f', 8.0, -8.0, -1, 1, 0, true, false, false)
     RemoveAnimDict('amb_rest@world_human_sleep_ground@arm@male_b@idle_b')
+  
+    Wait(10000)
+    AnimpostfxPlay('PlayerDrunk01_PassOut')
+    DoScreenFadeOut(10000)  -- 10 seconds fade-out
+    Wait(10000)
+
+    -- Choose a random sleeping location from the array
+    local randomIndex = math.random(1, #sleepLocations)
+    local newCoords = sleepLocations[randomIndex]
+
+    -- Teleport the player to the selected coordinates
+    SetEntityCoordsNoOffset(PlayerPedId(), newCoords.x, newCoords.y, newCoords.z, true, true, true)
+
+    -- Rotate the player character to simulate lying down
+    SetEntityHeading(PlayerPedId(), 0.0) -- You can adjust the heading (rotation) as needed
+
+    -- Fade in the screen
+    AnimpostfxPlay('PlayerWakeUpDrunk')
+   
+    DoScreenFadeIn(40000)  -- 10 seconds fade-in 
+    AnimpostfxPlay('Title_Gen_daylater')
+    Wait(10000)
+    AnimpostfxStop('PlayerWakeUpDrunk')
+    Citizen.InvokeNative(0x58F7DB5BD8FA2288, ped) -- Cancel Walk Style
+   
+
 end)
+
+
 
 RegisterNetEvent('rsg-drinker:client:cancelemote')
 AddEventHandler('rsg-drinker:client:cancelemote', function()

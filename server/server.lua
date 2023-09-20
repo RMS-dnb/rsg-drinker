@@ -24,6 +24,14 @@ RSGCore.Functions.CreateUseableItem("moonshine", function(source, item)
     end
 end)
 
+RSGCore.Functions.CreateUseableItem("vodka", function(source, item)
+    local src = source
+    local Player = RSGCore.Functions.GetPlayer(src)
+    if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+        TriggerClientEvent("rsg-drinker:client:DrinkVodka", src, item.name)
+    end
+end)
+
 RSGCore.Functions.CreateUseableItem("coffee", function(source, item)
     local src = source
     local Player = RSGCore.Functions.GetPlayer(src)

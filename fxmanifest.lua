@@ -4,6 +4,7 @@ game 'rdr3'
 
 author 'RexShack#3041'
 description 'rsg-drinker'
+Edit 'RMS_dnb'
 
 client_scripts {
     'client/client.lua'

@@ -1,3 +1,6 @@
+# Re-edit by RMS_dnb
+- Drink too much and you will wake up in random locations.  Cut scenes added.  Add as many locations as you would like.
+
 # RexshackGaming
 - discord : https://discord.gg/s5uSk56B65
 - github : https://github.com/Rexshack-RedM
