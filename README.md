@@ -1,5 +1,5 @@
 # Re-edit by RMS_dnb
-- Drink too much and you will wake up in random locations.  Cut scenes added.  Add as many locations as you would like.
+- Drink too much and you will wake up in random locations.  Cut scenes added.  Add as many locations as you would like. Moonshine is set at 5-6 drinks.  Beer is set at 9 drinks.  You can adjust to your likings.
 
 # RexshackGaming
 - discord : https://discord.gg/s5uSk56B65
